@@ -4,10 +4,6 @@ on:
   pull_request:
     branches:
       - main
-env:
-  ACCESS_TOKEN_KEY: secret
-  REFRESH_TOKEN_KEY: terces
-  ACCESS_TOKEN_AGE: 3600
 
 jobs:
   test:
@@ -53,3 +49,6 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: mysecretpassword
           PGDATABASE: forumapi_test
+          ACCESS_TOKEN_KEY: secret
+          REFRESH_TOKEN_KEY: terces
+          ACCESS_TOKEN_AGE: 3600
