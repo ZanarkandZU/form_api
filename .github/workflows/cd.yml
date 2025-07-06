@@ -1,42 +1,40 @@
-name: Continuous Deploiment
+name: Continuous Deployment
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 env:
   RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
   RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  ACCESS_TOKEN_AGE: 3600
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
-      - name: Install package
+      - name: Install dependencies and run migrations
         run: |
-          git pull origin main
-          npm install
+          npm ci  # Menggunakan ci untuk instalasi yang lebih clean
           npm run migrate up
-
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy to Railway
         run: |
+          npm install -g @railway/cli 
           railway login --token ${{ secrets.RAILWAY_TOKEN }}
           railway link ${{ secrets.RAILWAY_PROJECT_ID }}
           railway variables set \
-            ACCESS_TOKEN_KEY=scret \
-            REFRESH_TOKEN_KEY=terces \
+            ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }} \
+            REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }} \
             ACCESS_TOKEN_AGE=3600
           railway up --detach
