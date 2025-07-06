@@ -2,7 +2,8 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 env:
   RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
@@ -21,15 +22,9 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies and run migrations
+      - name: Install dependencies and migrations
         run: |
-          npm ci  # Menggunakan ci untuk instalasi yang lebih clean
-          npm run migrate up
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Deploy to Railway
-        run: |
+          npm install
           npm install -g @railway/cli 
           railway login --token ${{ secrets.RAILWAY_TOKEN }}
           railway link ${{ secrets.RAILWAY_PROJECT_ID }}
