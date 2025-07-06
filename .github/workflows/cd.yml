@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies and run migrations
         run: |
-          npm ci  # Menggunakan ci untuk instalasi yang lebih clean
+          npm install
           npm run migrate up
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
