@@ -23,18 +23,14 @@ jobs:
 
       - name: Install dependencies and run migrations
         run: |
-          npm ci  # Menggunakan ci untuk instalasi yang lebih clean
-          npm run migrate up
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Deploy to Railway
-        run: |
+          npm install
           npm install -g @railway/cli 
           railway login --token ${{ secrets.RAILWAY_TOKEN }}
           railway link ${{ secrets.RAILWAY_PROJECT_ID }}
-          railway variables set \
-            ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }} \
-            REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }} \
-            ACCESS_TOKEN_AGE=3600
           railway up --detach
+          npm run migrate up
+        env:
+          ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
+          REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
+          ACCESS_TOKEN_AGE: 3600
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
