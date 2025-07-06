@@ -2,8 +2,7 @@ name: Deploy to Railway
 
 on:
   push:
-    branches: 
-        - main
+    branches: [main]
 
 jobs:
   deploy:
@@ -19,13 +18,20 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli@latest
 
-      - name: Login to Railway
-        run: railway login
+      - name: Authenticate with Railway
+        run: |
+          railway login --ci ${{ secrets.RAILWAY_TOKEN }}
+          railway whoami
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Link Project
         run: railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+
+      - name: Run Migrations
+        run: railway run -- npm run migrate up
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy
         run: railway up --detach
