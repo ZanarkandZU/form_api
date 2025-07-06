@@ -30,7 +30,7 @@ jobs:
         run: npm install -g @railway/cli@latest
 
       - name: Login to Railway
-        run: railway login --ci ${{ secrets.RAILWAY_TOKEN }}
+        run: railway login ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Link Project
         run: railway link ${{ secrets.RAILWAY_PROJECT_ID }}
