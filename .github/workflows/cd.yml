@@ -8,9 +8,6 @@ on:
 env:
   RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
   RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
-  REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
-  ACCESS_TOKEN_AGE: 3600
 
 jobs:
   deploy:
@@ -38,4 +35,8 @@ jobs:
         run: |
           railway login --token ${{ secrets.RAILWAY_TOKEN }}
           railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway variables set \
+            ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }} \
+            REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }} \
+            ACCESS_TOKEN_AGE=3600
           railway up --detach
