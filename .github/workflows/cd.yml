@@ -2,17 +2,18 @@ name: Continuous Deployment
 
 on:
   push:
-    branches:
-      - main
+    branches: 
+       - main
 
 env:
   RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
   RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  ACCESS_TOKEN_AGE: 3600
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,16 +23,25 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies and migrations
-        run: |
-          npm install
-          npm install -g @railway/cli 
-          railway login --token ${{ secrets.RAILWAY_TOKEN }}
-          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
-          railway up --detach
-          npm run migrate up
+      - name: Install dependencies
+        run: npm install --no-fund
+
+      - name: Setup Railway CLI
+        run: npm install -g @railway/cli@latest
+
+      - name: Login to Railway
+        run: echo "${{ secrets.RAILWAY_TOKEN }}" | railway login
+
+      - name: Link Project
+        run: railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+
+      - name: Run Migrations
+        run: npm run migrate up
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
           REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
-          ACCESS_TOKEN_AGE: 3600
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ACCESS_TOKEN_AGE: ${{ secrets.ACCESS_TOKEN_AGE }}
+
+      - name: Deploy to Railway
+        run: railway up --detach
